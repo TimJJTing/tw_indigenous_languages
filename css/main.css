@@ -1,0 +1,68 @@
+body {
+    background-color:#323741;
+}
+.counties {
+    fill: #45C48B;
+}
+/*.counties :hover {
+    fill: #6EC1FF;
+}
+*/ 
+.county-borders {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 0.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 85px;					
+    height: 25px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 3px;			
+    pointer-events: none;			
+}
+
+#groups > li > a {
+    color: rgba(237, 86, 59, 0.75);
+}
+
+#groups > li > a:hover {
+    color: rgba(237, 86, 59, 0.87);
+}
+
+#groups > li.active > a {
+    color: #ED553B;
+    font-size: 18px;
+}
+
+#info-panel > .group-info > div > h2 {
+    color: #ED553B;
+}
+
+#info-panel > .group-info > div > h3 {
+    color: #F8B500;
+}
+
+#info-panel > .group-info > div > p {
+    color: #FFF4E0;
+}
+
+#info-panel > .proj-title > div > h1 {
+    color: #ED553B;
+}
+
+#info-panel > .proj-info > div > h2 {
+    color: #ED553B;
+}
+
+#info-panel > .proj-info > div > p {
+    color: #FFF4E0;
+}

@@ -1,0 +1,1 @@
+An interactive infographic briefly shows the current status of the project.
