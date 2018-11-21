@@ -30,12 +30,32 @@ div.tooltip {
     pointer-events: none;			
 }
 
+#timeslots > li:not(.lable) {
+    cursor: pointer;
+}
+
+#timeslots > li.active {
+    border-bottom: .5px solid white;
+}
+
+#timeslots > li.active > a {
+    font-size: 18px;
+}
+
+#groups > li:not(.lable) {
+    cursor: pointer;
+}
+
 #groups > li > a {
     color: rgba(237, 86, 59, 0.75);
 }
 
 #groups > li > a:hover {
     color: rgba(237, 86, 59, 0.87);
+}
+
+#groups > li.active {
+    border-bottom: .5px solid #ED553B;
 }
 
 #groups > li.active > a {
@@ -55,14 +75,35 @@ div.tooltip {
     color: #FFF4E0;
 }
 
-#info-panel > .proj-title > div > h1 {
-    color: #ED553B;
-}
-
-#info-panel > .proj-info > div > h2 {
+#info-panel > .proj-title > div > h1, 
+#info-panel > .proj-info > div > h2
+{
     color: #ED553B;
 }
 
 #info-panel > .proj-info > div > p {
     color: #FFF4E0;
+}
+
+#info-panel > .proj-info > div > p > span {
+    color: #F8B500;
+    font-size: 120%;
+}
+
+circle {
+    fill: #FFF4E0;
+}
+
+circle:hover,
+circle.ts-hover,
+circle.gp-hover,
+circle.sch-hover {
+    fill: #F8B500;
+    stroke: white;
+    stroke-width: 1.5;
+}
+
+circle.ts-deactive:not(.ts-hover),
+circle.gp-deactive:not(.gp-hover) {
+    display: none;
 }

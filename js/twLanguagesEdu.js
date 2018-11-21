@@ -128,13 +128,13 @@ d3.json("json/language_co_learn1114.json").then(function(data) {
         .html(`
             <div class="col-12">
                 <h2>計畫執行現況</h2><br>
-                <p><span style="color:#F8B500;font-size:120%;">`+data.length+`</span>&nbsp位學生</p>
-                <p><span style="color:#F8B500;font-size:120%;">`+schools.length+`</span>&nbsp所中小學</p>
-                <p><span style="color:#F8B500;font-size:120%;">`+ngroups+`</span>&nbsp個共學組</p>
-                <p><span style="color:#F8B500;font-size:120%;">`+nteachers+`</span>&nbsp位族語教師</p>
-                <p><span style="color:#F8B500;font-size:120%;">`+nlangs+`</span>&nbsp種語言</p>
-                <p><span style="color:#F8B500;font-size:120%;">`+ncounties+`</span>&nbsp縣市</p>
-                <p><span style="color:#F8B500;font-size:120%;">`+timeslots.length+`</span>&nbsp選習時段</p>
+                <p><span>`+data.length+`</span>&nbsp位學生</p>
+                <p><span>`+schools.length+`</span>&nbsp所中小學</p>
+                <p><span>`+ngroups+`</span>&nbsp個共學組</p>
+                <p><span>`+nteachers+`</span>&nbsp位族語教師</p>
+                <p><span>`+nlangs+`</span>&nbsp種語言</p>
+                <p><span>`+ncounties+`</span>&nbsp縣市</p>
+                <p><span>`+timeslots.length+`</span>&nbsp選習時段</p>
             </div>`
     );
 
@@ -147,17 +147,12 @@ d3.json("json/language_co_learn1114.json").then(function(data) {
         .append("g")
         .attr("transform", function(d) { return "translate(" + projection([d.Lng, d.Lat]) + ")"; })
         .append("circle")
-        .attr("class", function(d){ return d3.select(this).attr("class")+" "+d.sno;})
+        .attr("class", function(d){ return d.sno;})
         .attr("class", function(d){ return d3.select(this).attr("class")+" "+d.groups.join(" ");}) // adding classes for group
         .attr("class", function(d){ return d3.select(this).attr("class")+" "+d.timeslots.join(" ");}) // adding classes for timeslot
         .attr("r", 2) //radius of the point you have added
-        .attr("fill", "#FFF4E0")
         .on("mouseover", function(d, i) {
-            d3.select(this)
-                .attr("fill", "#F8B500")
-                .attr("r", 5)
-                .attr("stroke", "white")
-                .attr("stroke-width", 1.5);
+            d3.select(this).attr("r", 5);
             // tooltip's text and position
             school_tip
                 .html(d.sch_name)
@@ -170,11 +165,7 @@ d3.json("json/language_co_learn1114.json").then(function(data) {
                 .style("opacity", .9);
         })
         .on("mouseout", function() { 
-            d3.select(this)
-                .attr("fill", "#FFF4E0")
-                .attr("r", 2)
-                .attr("stroke", null)
-                .attr("stroke-width", null);
+            d3.select(this).attr("r", 2);
             // tooltip fade out
             school_tip
                 .transition()
@@ -183,7 +174,7 @@ d3.json("json/language_co_learn1114.json").then(function(data) {
         });
     
     // render dynamic legends and handle mouse hover and click events
-    timeslot_ul.selectAll("li")
+    timeslot_ul.selectAll("li:not(.lable)")
         .data(timeslots)
         .enter().append("li")
         .attr("id", function(d){ return "t_"+d.timeslot;})
@@ -194,17 +185,13 @@ d3.json("json/language_co_learn1114.json").then(function(data) {
         .on("mouseover", function(d, i){
             // select all active schools in given timeslot
             d3.selectAll(".tno"+d.timeslot.slice(0,2))
-                .attr("fill", "#F8B500")
-                .attr("r", 5)
-                .attr("stroke", "white")
-                .attr("stroke-width", 1.5);
+                .classed("ts-hover", true)
+                .attr("r", 5);
         })
         .on("mouseout", function(d, i) { 
             d3.selectAll(".tno"+d.timeslot.slice(0,2))
-                .attr("fill", "#FFF4E0")
-                .attr("r", 2)
-                .attr("stroke", null)
-                .attr("stroke-width", null);
+                .classed("ts-hover", false)
+                .attr("r", 2);
         })
         .on("click", click_timeslot);
 });
@@ -216,15 +203,21 @@ function click_timeslot(d, i){
     d3.select("#info-panel").selectAll("div.group-info").remove();
     // show basic project stats
     d3.select("#info-panel").select("div.proj-info").classed("d-none", false);
+
     var tgt = d3.select(this);
-    if (tgt.classed("active")) {
-        tgt.classed("active", false);
-    }
-    else {
-        // deactive all active timeslots
-        timeslot_ul.selectAll("li.active").classed("active", false);
-        // active this timeslot
+    var tgt_changed = !tgt.classed("active");
+    // deactive all active timeslots and groups
+    d3.selectAll("li.active").classed("active", false);
+    // remove all ts/gp-deactive class
+    d3.selectAll("circle")
+        .classed("ts-deactive", false)
+        .classed("gp-deactive", false);
+    if (tgt_changed) {
+        // active ts on nav
         tgt.classed("active", true);
+        // mark other circles "ts-deactivated"
+        d3.selectAll("circle:not(.tno"+d.timeslot.slice(0,2)+")")
+            .classed("ts-deactive", true);
         // co-learning groups in the given timeslot 
         var groups = d3.nest()
             .key(function(d){return d.gno;})
@@ -267,18 +260,14 @@ function click_timeslot(d, i){
                 return '<a class="nav-link">'+d.gno+'</a>';
             })
             .on("mouseover", function(d, i){
-                d3.selectAll(".gno"+d.gno)
-                    .attr("fill", "#F8B500")
-                    .attr("r", 5)
-                    .attr("stroke", "white")
-                    .attr("stroke-width", 1.5);
+                d3.selectAll("circle.gno"+d.gno)
+                    .classed("gp-hover", true)
+                    .attr("r", 5);
             })
             .on("mouseout", function(d, i){
-                d3.selectAll(".gno"+d.gno)
-                    .attr("fill", "#FFF4E0")
-                    .attr("r", 2)
-                    .attr("stroke", null)
-                    .attr("stroke-width", null);
+                d3.selectAll("circle.gno"+d.gno)
+                    .classed("gp-hover", false)
+                    .attr("r", 2);
             })
             .on("click", click_group);
     }
@@ -290,27 +279,23 @@ function click_group(d, i){
     d3.select("#info-panel").selectAll("div.group-info").remove();
     // hide project stats
     d3.select("#info-panel").select("div.proj-info").classed("d-none", true);
-    // de-highlight all previously highlighted school circles
-    d3.selectAll("circle")
-        .classed("highlighted", false);
-
+    
     var tgt = d3.select(this);
-    if (tgt.classed("active")) {
-        tgt.classed("active", false);
+    var tgt_changed = !tgt.classed("active");
+    // deactive all active groups
+    d3.select("#groups").selectAll("li.active").classed("active", false);
+    // remove all gp-deactive class
+    d3.selectAll("circle").classed("gp-deactive", false);
+
+    if (!tgt_changed) {
         d3.select("#info-panel").select("div.proj-info").classed("d-none", false);
     }
     else {
-        // deactive all active groups
-        d3.select("#groups").selectAll("li.active").classed("active", false);
         // active this group
         tgt.classed("active", true);
-        //----- highlight corresponding circles
-        d3.selectAll(".gno"+d.gno)
-            .classed("highlighted", true)
-            .attr("fill", "#F8B500")
-            .attr("r", 5)
-            .attr("stroke", "white")
-            .attr("stroke-width", 1.5);
+        //deactive circles of other groups
+        d3.selectAll("circle:not(.gno"+d.gno+")")
+            .classed("gp-deactive", true);
             
         // basic group info
         d3.select("#info-panel")
@@ -339,18 +324,14 @@ function click_group(d, i){
             .classed("group-info", true)
             .html(schInfoTemplate)
             .on("mouseover", function(d, i){
-                d3.selectAll(".sno"+d.sno)
-                    .attr("fill", "#F8B500")
-                    .attr("r", 5)
-                    .attr("stroke", "white")
-                    .attr("stroke-width", 1.5);
+                d3.selectAll("circle.sno"+d.sno)
+                    .classed("sch-hover", true)
+                    .attr("r", 5);
             })
             .on("mouseout", function(d, i){
-                d3.selectAll(".sno"+d.sno)
-                    .attr("fill", "#FFF4E0")
-                    .attr("r", 2)
-                    .attr("stroke", null)
-                    .attr("stroke-width", null);
+                d3.selectAll("circle.sno"+d.sno)
+                    .classed("sch-hover", false)
+                    .attr("r", 2);
             });
             //.on("click", click_group);
     }
